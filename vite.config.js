@@ -1,3 +1,10 @@
+/*
+ * @Description:
+ * @Author: Bei
+ * @Date: 2026-05-26 13:39:22
+ * @LastEditTime: 2026-05-26 16:44:10
+ * @LastEditors: Bei
+ */
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig, loadEnv } from 'vite'
@@ -19,14 +26,13 @@ export default defineConfig(({ mode }) => {
 
     server: {
       proxy: {
-        '/api/claude': {
-          target: 'https://api.anthropic.com',
+        '/api/qwen': {
+          target: 'https://dashscope.aliyuncs.com',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/claude/, ''),
+          rewrite: (path) => path.replace(/^\/api\/qwen/, ''),
           configure: (proxy, options) => {
             proxy.on('proxyReq', (proxyReq, req, res) => {
-              proxyReq.setHeader('x-api-key', env.VITE_APP_CLAUDE_KEY)
-              proxyReq.setHeader('anthropic-version', '2023-06-01')
+              proxyReq.setHeader('Authorization', `Bearer ${env.VITE_APP_QWEN_KEY}`)
             })
           },
         },

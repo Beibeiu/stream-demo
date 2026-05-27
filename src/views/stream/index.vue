@@ -1,7 +1,7 @@
 <template>
   <div class="chat-container">
     <div class="chat-header">
-      <h2>Claude AI 对话</h2>
+      <h2>千问 AI 对话</h2>
     </div>
 
     <div class="chat-messages" ref="messagesContainer">
@@ -58,14 +58,13 @@ const sendMessage = async () => {
   messages.value.push({ role: 'assistant', content: '' })
 
   try {
-    const response = await fetch('/api/claude/v1/messages', {
+    const response = await fetch('/api/qwen/compatible-mode/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 4096,
+        model: 'qwen-plus',
         messages: messages.value
           .filter((m) => m.content)
           .map((m) => ({ role: m.role, content: m.content })),
@@ -90,8 +89,9 @@ const sendMessage = async () => {
 
           try {
             const parsed = JSON.parse(data)
-            if (parsed.type === 'content_block_delta') {
-              messages.value[assistantIndex].content += parsed.delta.text
+            const delta = parsed.choices?.[0]?.delta
+            if (delta && delta.content) {
+              messages.value[assistantIndex].content += delta.content
               scrollToBottom()
             }
           } catch (e) {
